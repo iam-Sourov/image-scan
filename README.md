@@ -2,7 +2,6 @@
 
 An enterprise-grade, high-performance web application designed to detect AI-generated and deepfake images with precision. Built with a modern, glassmorphic UI, it seamlessly integrates with the Hugging Face Inference API to analyze pixel noise, edge discrepancies, and compression artifacts to accurately determine image authenticity.
 
-![AI Image Authenticator](/public/preview.png) *(Note: Replace with an actual screenshot of your app)*
 
 ## ✨ Features
 
