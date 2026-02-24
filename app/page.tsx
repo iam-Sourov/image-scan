@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
 import { Clock } from "lucide-react";
 
+import { compressImage } from "@/lib/image-processor";
+
 export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState<string | null>(null);
@@ -55,7 +57,19 @@ export default function Home() {
       if (typeof fileOrUrl === "string") {
         formData.append("url", fileOrUrl);
       } else {
-        formData.append("file", fileOrUrl);
+        // Compress image before sending to prevent payload size issues (Vercel has 4.5MB limit)
+        // This also standardizes the format to JPEG for the AI model
+        let uploadBlob: Blob = fileOrUrl;
+        try {
+          // If file is larger than 1MB or we want to ensure compatibility, compress it
+          if (fileOrUrl.size > 1024 * 1024 || fileOrUrl.type === "image/heic") {
+            uploadBlob = await compressImage(fileOrUrl);
+          }
+        } catch (compressionError) {
+          console.warn("Compression failed, using original file:", compressionError);
+          // Fallback to original file if compression fails
+        }
+        formData.append("file", uploadBlob, fileOrUrl.name || "upload.jpg");
       }
 
       // Call API
@@ -65,6 +79,13 @@ export default function Home() {
       });
 
       if (!res.ok) {
+        if (res.status === 504) {
+          throw new Error("Server timed out. The AI model is likely waking up. Please try again in a moment.");
+        }
+        if (res.status === 413) {
+          throw new Error("The photo is too large to process. Please try a smaller image.");
+        }
+
         let errorMsg = "Detection failed";
         try {
           const errorData = await res.json();
@@ -116,10 +137,8 @@ export default function Home() {
 
         {/* Header */}
         <header className="relative z-10 w-full max-w-7xl mx-auto p-4 sm:p-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center" onClick={resetState} style={{ cursor: 'pointer' }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center gap-2" onClick={resetState} style={{ cursor: 'pointer' }}>
+            <Shield className="w-5 h-5 text-white" />
             <h1 className="text-xl font-bold tracking-tight">AI Photo Checker</h1>
           </div>
 
