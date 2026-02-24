@@ -6,9 +6,11 @@ import { ScanningAnimation } from "@/components/ScanningAnimation";
 import { AnalysisDashboard, type DetectionResult } from "@/components/AnalysisDashboard";
 import { HistorySidebar, type HistoryItem } from "@/components/HistorySidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Sparkles } from "lucide-react";
+import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
+import { Clock } from "lucide-react";
 
 export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -109,59 +111,55 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 overflow-hidden font-sans selection:bg-indigo-500/30">
-      {/* Sidebar Overlay (Mobile) */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative overflow-y-auto">
-        {/* Decorative Background Gradients */}
-        <div className="absolute top-0 inset-x-0 h-[500px] overflow-hidden pointer-events-none fade-out opacity-40 dark:opacity-20 z-0">
-          <div className="absolute top-[-200px] left-[-200px] w-[600px] h-[600px] bg-indigo-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-blob" />
-          <div className="absolute top-[-100px] right-[-200px] w-[500px] h-[500px] bg-emerald-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-blob animation-delay-2000" />
-        </div>
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans selection:bg-indigo-500/30">
+      <div className="flex-1 flex flex-col relative">
 
         {/* Header */}
-        <header className="relative z-10 w-full max-w-7xl mx-auto p-6 flex items-center justify-between">
-          <div className="flex items-center gap-2" onClick={resetState} style={{ cursor: 'pointer' }}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg">
+        <header className="relative z-10 w-full max-w-7xl mx-auto p-4 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center" onClick={resetState} style={{ cursor: 'pointer' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">AI Image Authenticator</h1>
+            <h1 className="text-xl font-bold tracking-tight">AI Photo Checker</h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              className="md:hidden border-slate-200 dark:border-slate-800"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              History
-            </Button>
+            {history.length > 0 && (
+              <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-slate-200 dark:border-slate-800 bg-white dark:bg-black"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    History
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-md p-0 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+                  <SheetHeader className="sr-only">
+                    <SheetTitle>History Sidebar</SheetTitle>
+                    <SheetDescription>View your recently checked photos</SheetDescription>
+                  </SheetHeader>
+                  <div className="h-full w-full overflow-hidden">
+                    <HistorySidebar onSelect={handleHistorySelect} onClear={clearHistory} history={history} />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
             {currentResult && (
               <Button
                 variant="default"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 shadow-indigo-500/25 shadow-lg"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-4 sm:px-6 shadow-md"
                 onClick={resetState}
               >
-                Scan Another
+                Check Another Photo
               </Button>
             )}
           </div>
         </header>
 
         {/* Hero & Content */}
-        <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto p-6 pt-10 md:pt-20 flex flex-col items-center min-h-[500px]">
+        <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 pt-6 sm:pt-10 md:pt-20 flex flex-col items-center min-h-[500px]">
           <AnimatePresence mode="wait">
             {!currentImageSrc && !isProcessing && (
               <motion.div
@@ -172,16 +170,12 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="w-full text-center space-y-12"
               >
-                <div className="space-y-6 max-w-3xl mx-auto">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 font-medium text-sm border border-slate-300/50 dark:border-slate-700/50 shadow-sm backdrop-blur-md">
-                    <Sparkles className="w-4 h-4 text-emerald-500" />
-                    Powered by advanced forensics AI
-                  </div>
-                  <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-500">
-                    Detect AI-Generated Images with Precision.
+                <div className="space-y-4 md:space-y-6 max-w-3xl mx-auto px-2">
+                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter leading-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-500">
+                    Is this photo real or AI? Let&apos;s find out.
                   </h2>
-                  <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                    Upload any image to verify its authenticity. We analyze pixel noise, edge discrepancies, and compression artifacts to uncover deepfakes instantly.
+                  <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                    Just drop a picture below, and I&apos;ll take a close look at the details to see if it was snapped by a real camera or created by artificial intelligence.
                   </p>
                 </div>
 
@@ -198,9 +192,9 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="w-full"
               >
-                <div className="text-center mb-8 space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tight">Analyzing Image...</h2>
-                  <p className="text-slate-500 dark:text-slate-400">Please wait while our models run forensics</p>
+                <div className="text-center mb-6 sm:mb-8 space-y-2 px-2">
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Hmm, taking a look...</h2>
+                  <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Analyzing the pixels and looking for clues...</p>
                 </div>
                 <ScanningAnimation imageSrc={currentImageSrc} />
               </motion.div>
@@ -219,16 +213,6 @@ export default function Home() {
           </AnimatePresence>
         </main>
       </div>
-
-      {/* History Sidebar */}
-      <motion.aside
-        className={`fixed inset-y-0 right-0 z-50 w-80 bg-white/80 dark:bg-black/40 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800/50 shadow-[-20px_0_40px_-15px_rgba(0,0,0,0.1)] transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-      >
-        <div className="h-full w-full">
-          <HistorySidebar onSelect={handleHistorySelect} onClear={clearHistory} history={history} />
-        </div>
-      </motion.aside>
     </div>
   );
 }

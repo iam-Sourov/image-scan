@@ -27,9 +27,9 @@ export function HistorySidebar({ onSelect, onClear, history }: HistorySidebarPro
           <Clock className="w-8 h-8 text-slate-300 dark:text-slate-600" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">No History Yet</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Nothing here yet!</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Scanned images will appear here
+            Your checked photos will show up here
           </p>
         </div>
       </div>
@@ -41,7 +41,7 @@ export function HistorySidebar({ onSelect, onClear, history }: HistorySidebarPro
       <div className="px-6 pb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
           <Clock className="w-5 h-5" />
-          Recent Scans
+          Recently Checked
         </h2>
         <button
           onClick={onClear}

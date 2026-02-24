@@ -9,7 +9,7 @@ interface ScanningAnimationProps {
 
 export function ScanningAnimation({ imageSrc }: ScanningAnimationProps) {
   return (
-    <div className="relative w-full max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/20 dark:border-white/10 bg-slate-900 aspect-video flex items-center justify-center">
+    <div className="relative w-full max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 bg-slate-900 aspect-video flex items-center justify-center">
       <div className="relative w-full h-full">
         <Image
           src={imageSrc}
@@ -33,12 +33,12 @@ export function ScanningAnimation({ imageSrc }: ScanningAnimationProps) {
 
         {/* HUD Elements */}
         <div className="absolute top-4 left-4 text-emerald-400 font-mono text-xs animate-pulse">
-          <p>INITIATING DEEP SCAN...</p>
-          <p>ANALYZING PIXEL NOISE</p>
+          <p>LOOKING CLOSELY AT THE PIXELS...</p>
+          <p>CHECKING FOR ANYTHING UNUSUAL</p>
         </div>
         <div className="absolute bottom-4 right-4 text-emerald-400 font-mono text-xs text-right animate-pulse">
-          <p>ARTIFACT DETECTION: ON</p>
-          <p>MODEL: HIVE-V2</p>
+          <p>LOOKING FOR AI CLUES...</p>
+          <p>GETTING DETAILS READY...</p>
         </div>
       </div>
     </div>
