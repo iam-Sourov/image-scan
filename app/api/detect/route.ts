@@ -3,6 +3,9 @@ import { InferenceClient } from "@huggingface/inference";
 
 const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
+export const maxDuration = 60; // Allow up to 60 seconds (useful for cold starts on Pro/Teams)
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -72,7 +75,7 @@ export async function POST(req: Request) {
         if (isWaitable) {
           retries++;
           console.warn(`HF API busy/loading. Retrying (${retries}/${maxRetries})... Error: ${errorText}`);
-          await new Promise(resolve => setTimeout(resolve, 5000)); // wait 5 seconds before retrying
+          await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2 seconds before retrying
           continue;
         }
 
@@ -85,7 +88,7 @@ export async function POST(req: Request) {
         retries++;
         console.warn(`Network Error contacting HF SDK. Retrying (${retries}/${maxRetries})...`, errorText);
         if (retries >= maxRetries) throw new Error(`Hugging Face API Error: ${errorText}`);
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
 
