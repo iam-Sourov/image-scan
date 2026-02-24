@@ -32,7 +32,7 @@ export function UploadZone({ onUpload, isProcessing }: { onUpload: (file: File |
     if (fileRejections.length > 0) {
       const error = fileRejections[0].errors[0];
       if (error.code === "file-too-large") {
-        toast.error("File is too large. Max size is 5MB.");
+        toast.error("File is too large. Max size is 20MB.");
       } else if (error.code === "file-invalid-type") {
         toast.error("Invalid file type. Please upload JPEG, PNG, or WebP.");
       } else {
@@ -54,7 +54,7 @@ export function UploadZone({ onUpload, isProcessing }: { onUpload: (file: File |
       "image/png": [".png"],
       "image/webp": [".webp"],
     },
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 20 * 1024 * 1024, // 20MB
     disabled: isProcessing,
     multiple: false,
   });
@@ -97,7 +97,7 @@ export function UploadZone({ onUpload, isProcessing }: { onUpload: (file: File |
                     {isDragActive ? "Drop the photo here" : "Drag & drop your photo right here"}
                   </p>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    or click to choose one (JPEG, PNG, WebP up to 5MB)
+                    or click to choose one (JPEG, PNG, WebP up to 20MB)
                   </p>
                 </div>
               </motion.div>
